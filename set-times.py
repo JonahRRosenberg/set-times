@@ -6,6 +6,7 @@ import urllib2
 from fb_client import FBClient
 
 EVENTS_URL = "http://www.clubtix.com/latest_events"
+CLUBTIX_REGEX = r".*::(.*)::.*"
 
 def html_request(url):
   html = urllib2.urlopen(url).read()
@@ -21,7 +22,7 @@ class Artist(object):
     self.links.append(link)
 
 def parse_b_artists(soup, artists):
-  b = soup.find("b", text=re.compile(".*::.*::.*"))
+  b = soup.find("b", text=re.compile(CLUBTIX_REGEX))
   if b:
     artists_p = b.parent
 
@@ -32,7 +33,7 @@ def parse_b_artists(soup, artists):
         curArtist.add_link(child.get('href'))
       else:
         if child.name == "b":
-          artist_match = re.match(r".*::(.*)::.*", child.text)
+          artist_match = re.match(CLUBTIX_REGEX, child.text)
           if artist_match:
             artist = artist_match.group(1).strip().lower()
             curArtist = Artist(artist)
@@ -41,22 +42,12 @@ def parse_b_artists(soup, artists):
           looking_for_links = True
         elif child == " ]":
           looking_for_links = False
-  
+
 def parse_p_artists(soup, artists):
-  #p = soup.find("p", text=re.compile(".*::.*"))
-  p = soup.find_all("p", text=re.compile(r".*:.*"))
-  print p
-  #ps = soup.find_all("p")
-  #for p in ps:
-  #  t = re.match(r".*::.*", p.text)
-  #  if t:
-  #    print t.group(0)
-  #  if '::' in p.text:
-  #    print "=================="
-  #    print
-  #    print p.text
-  #    print
-  #    print "=================="
+  artists_p = [p for p in soup.find_all("p") if re.match(CLUBTIX_REGEX, p.text) is not None]
+  if len(artists_p) > 0:
+    artists_p = artists_p[0]
+    print artists_p
 
 if __name__ == '__main__':
   #events_soup = html_request(EVENTS_URL)

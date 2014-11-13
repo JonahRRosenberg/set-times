@@ -16,13 +16,20 @@ class FBClient(object):
 
     user = self.graph.get_object(username)
     posts = self.graph.get_connections(user['id'], 'posts')
-    message_posts = [x for x in posts['data'] if 'message' in x]
-    for post in message_posts:
-      message = post['message'].lower()
-      created_time = self._get_local_time(post['created_time'])
-      if self._is_set_time(message) and created_time.date() == date:
-        set_time_posts.append(post['message'])
+    for post in self._valid_posts(posts):
+      if 'comments' in post:
+        #print post['comments']['data']
+        #comments = [x for x in post['comments']['data']]
+        for comment in self._valid_posts(post['comments']):
+          self._add_set_times(comment, date, set_time_posts)
+      self._add_set_times(post, date, set_time_posts)
     return set_time_posts
+
+  def _valid_posts(self, posts):
+    return [x for x in posts['data']
+             if 'message' in x
+             and 'created_time' in x
+           ]
 
   def _is_set_time(self, message):
     return 'set' in message and 'time' in message
@@ -32,4 +39,15 @@ class FBClient(object):
         tzinfo=tz.tzutc())
     return utc_time.astimezone(tz.tzlocal())
 
-    
+  def _add_set_times(self, post, date, set_time_posts):
+    message = post['message'].lower()
+    created_time = self._get_local_time(post['created_time'])
+    if self._is_set_time(message):# and created_time.date() == date:
+      set_time_posts.append(post['message'])
+
+if __name__ == '__main__':
+  #TESTING: REMOVE
+  fb = FBClient()
+  for post in fb.get_set_time_posts('iamtchami', None):
+    print post
+

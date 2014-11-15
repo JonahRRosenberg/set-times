@@ -1,3 +1,5 @@
+import re
+
 FB_REGEX = r".*facebook.com\/([\w,.]*)\/?"
 
 class Artist(object):

@@ -18,8 +18,6 @@ class FBClient(object):
     posts = self.graph.get_connections(user['id'], 'posts')
     for post in self._valid_posts(posts):
       if 'comments' in post:
-        #print post['comments']['data']
-        #comments = [x for x in post['comments']['data']]
         for comment in self._valid_posts(post['comments']):
           self._add_set_times(comment, date, set_time_posts)
       self._add_set_times(post, date, set_time_posts)

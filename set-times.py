@@ -91,7 +91,10 @@ if __name__ == '__main__':
       username = artist.fb_username()
       if username:
         try:
-          print fb.get_set_time_posts(username, today)
+          set_time_posts = fb.get_set_time_posts(username, today)
+          if set_time_posts:
+            print "found set times. count: {0} sets: {1}".format(
+                len(set_time_posts), [x['message'] for x in set_time_posts])
         except Exception as ex:
           print "Unable to query fb. username: {0} ex: {1}".format(username, ex)
 

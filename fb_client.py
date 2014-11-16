@@ -19,33 +19,39 @@ class FBClient(object):
     for post in self._valid_posts(posts):
       if 'comments' in post:
         for comment in self._valid_posts(post['comments']):
-          self._add_set_times(comment, date, set_time_posts)
-      self._add_set_times(post, date, set_time_posts)
+          self._add_set_times(comment, date, user['id'], set_time_posts)
+      self._add_set_times(post, date, user['id'], set_time_posts)
     return set_time_posts
 
   def _valid_posts(self, posts):
     return [x for x in posts['data']
              if 'message' in x
              and 'created_time' in x
+             and 'from' in x
+             and 'id' in x['from']
            ]
 
   def _is_set_time(self, message):
-    return 'set' in message and 'time' in message
+    message = message.lower()
+    return (('set' in message and 'time' in message)
+        or 'on at' in message)
 
   def _get_local_time(self, time):
     utc_time = datetime.strptime(time, FB_DATE_TIME_FORMAT).replace(
         tzinfo=tz.tzutc())
     return utc_time.astimezone(tz.tzlocal())
 
-  def _add_set_times(self, post, date, set_time_posts):
-    message = post['message'].lower()
+  def _add_set_times(self, post, date, user_id, set_time_posts):
     created_time = self._get_local_time(post['created_time'])
-    if self._is_set_time(message):# and created_time.date() == date:
-      set_time_posts.append(post['message'])
+    if (post['from']['id'] == user_id and
+        self._is_set_time(post['message'])# and
+        #created_time.date() == date
+        ):
+      set_time_posts.append(post)
 
 if __name__ == '__main__':
   #TESTING: REMOVE
   fb = FBClient()
   for post in fb.get_set_time_posts('iamtchami', None):
-    print post
+    print post['message']
 

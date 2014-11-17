@@ -9,11 +9,17 @@ from artist import Artist
 from fb_client import FBClient
 
 EVENTS_URL = "http://www.clubtix.com/latest_events"
+EVENT_DATE_FORMAT = "%a, %b %d %Y"
 CLUBTIX_REGEX = r".*::(.*)::.*"
 
 def html_request(url):
   html = urllib2.urlopen(url).read()
   return BeautifulSoup(html)
+
+def get_event_date(url):
+  event_meta = url.find_next('p', class_='event_meta')
+  event_date = event_meta.text.split('|')[0].strip()
+  return datetime.strptime(event_date, EVENT_DATE_FORMAT).date()
 
 def get_username(user):
   return user['username'] if 'username' in user else user['id']
@@ -63,36 +69,36 @@ if __name__ == '__main__':
   events_soup = html_request(EVENTS_URL)
 
   urls = events_soup.find_all('a', class_="eventNameLink")
-  urls = [x.get('href') for x in urls]
+  urls = [(x.get('href'), get_event_date(x)) for x in urls]
 
   fb = FBClient()
   today = datetime.now().date()
-  today = date(2014, 11, 1) #TODO: REMOVE
 
-  for url in urls:
-    print "=========================================="
-    print "url:", url
-    #url = "http://www.clubtix.com/freaky-deaky-nervo-ktn-tchami-tickets-332007"
-    #url = "http://www.clubtix.com/morgan-page-elle-morgan-chris-v-tickets-327445"
-    soup = html_request(url)
+  for url, event_date in urls:
+    if event_date == today:
+      print "=========================================="
+      print "url: {0} date: {1}".format(url, event_date)
+      #url = "http://www.clubtix.com/freaky-deaky-nervo-ktn-tchami-tickets-332007"
+      #url = "http://www.clubtix.com/morgan-page-elle-morgan-chris-v-tickets-327445"
+      soup = html_request(url)
 
-    artists = []
+      artists = []
 
-    parse_b_artists(soup, artists)
-    parse_p_artists(soup, artists)
+      parse_b_artists(soup, artists)
+      parse_p_artists(soup, artists)
 
-    for artist in artists:
-      user = artist.fb_username(fb)
+      for artist in artists:
+        user = artist.fb_username(fb)
 
-      if user:
-        print "artist:", artist.name, "fb username:", get_username(user)
-        try:
-          set_time_posts = fb.get_set_time_posts(user['id'], today)
-          if set_time_posts:
-            print "found set times. count: {0} sets: {1}".format(
-                len(set_time_posts), [x['message'] for x in set_time_posts])
-        except Exception as ex:
-          print "Unable to query fb. user: {0} ex: {1}".format(get_username(user), ex)
-      else:
-        print "Unable to find user. artist:", artist.name
+        if user:
+          print "artist:", artist.name, "fb username:", get_username(user)
+          try:
+            set_time_posts = fb.get_set_time_posts(user['id'], today)
+            if set_time_posts:
+              print "found set times. count: {0} sets: {1}".format(
+                  len(set_time_posts), [x['message'] for x in set_time_posts])
+          except Exception as ex:
+            print "Unable to query fb. user: {0} ex: {1}".format(get_username(user), ex)
+        else:
+          print "Unable to find user. artist:", artist.name
 

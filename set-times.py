@@ -61,14 +61,9 @@ def parse_p_artists(soup, artists):
 
 if __name__ == '__main__':
   events_soup = html_request(EVENTS_URL)
-  #pages = events_soup.find_all(class_="events_page")
-  this_month = events_soup.find(text=re.compile(r"This Month"))
-  if not this_month:
-    raise RuntimeError("Could not find \"This Month\". Soup: " + str(events_soup))
 
-  table = this_month.find_parent("table")
-
-  urls = set([x.get('href') for x in table.find_all('a')])
+  urls = events_soup.find_all('a', class_="eventNameLink")
+  urls = [x.get('href') for x in urls]
 
   fb = FBClient()
   today = datetime.now().date()

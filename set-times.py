@@ -76,10 +76,7 @@ if __name__ == '__main__':
 
   for url, event_date in urls:
     if event_date == today:
-      print "=========================================="
       print "url: {0} date: {1}".format(url, event_date)
-      #url = "http://www.clubtix.com/freaky-deaky-nervo-ktn-tchami-tickets-332007"
-      #url = "http://www.clubtix.com/morgan-page-elle-morgan-chris-v-tickets-327445"
       soup = html_request(url)
 
       artists = []
@@ -89,7 +86,6 @@ if __name__ == '__main__':
 
       for artist in artists:
         user = artist.fb_username(fb)
-
         if user:
           print "artist:", artist.name, "fb username:", get_username(user)
           try:

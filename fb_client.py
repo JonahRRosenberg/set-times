@@ -57,9 +57,8 @@ class FBClient(object):
   def _add_set_times(self, post, date, user_id, set_time_posts):
     created_time = self._get_local_time(post['created_time'])
     if (post['from']['id'] == user_id and
-        self._is_set_time(post['message'])# and
-        #created_time.date() == date
-        ):
+        self._is_set_time(post['message']) and
+        created_time.date() == date):
       set_time_posts.append(post)
 
 if __name__ == '__main__':

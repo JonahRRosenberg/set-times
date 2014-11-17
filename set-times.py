@@ -15,6 +15,9 @@ def html_request(url):
   html = urllib2.urlopen(url).read()
   return BeautifulSoup(html)
 
+def get_username(user):
+  return user['username'] if 'username' in user else user['id']
+
 def parse_b_artists(soup, artists):
   b = soup.find("b", text=re.compile(CLUBTIX_REGEX))
   if b:
@@ -67,6 +70,10 @@ if __name__ == '__main__':
 
   urls = set([x.get('href') for x in table.find_all('a')])
 
+  fb = FBClient()
+  today = datetime.now().date()
+  today = date(2014, 11, 1) #TODO: REMOVE
+
   for url in urls:
     print "=========================================="
     print "url:", url
@@ -80,21 +87,17 @@ if __name__ == '__main__':
     parse_p_artists(soup, artists)
 
     for artist in artists:
-      print "artist:", artist.name, "links:", artist.links, "fb_username:", artist.fb_username()
+      user = artist.fb_username(fb)
 
-    fb = FBClient()
-    today = datetime.now().date()
-
-    today = date(2014, 11, 1) #TODO: REMOVE
-
-    for artist in artists:
-      username = artist.fb_username()
-      if username:
+      if user:
+        print "artist:", artist.name, "fb username:", get_username(user)
         try:
-          set_time_posts = fb.get_set_time_posts(username, today)
+          set_time_posts = fb.get_set_time_posts(user['id'], today)
           if set_time_posts:
             print "found set times. count: {0} sets: {1}".format(
                 len(set_time_posts), [x['message'] for x in set_time_posts])
         except Exception as ex:
-          print "Unable to query fb. username: {0} ex: {1}".format(username, ex)
+          print "Unable to query fb. user: {0} ex: {1}".format(get_username(user), ex)
+      else:
+        print "Unable to find user. artist:", artist.name
 

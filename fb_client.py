@@ -5,11 +5,24 @@ import facebook
 APP_ID = 339774799528645
 APP_SECRET = "0993650e78e2f8a64f096963c601e77b"
 FB_DATE_TIME_FORMAT = '%Y-%m-%dT%H:%M:%S+0000'
+LIKE_THRESHOLD = 2000
+MAX_USER_REQUEST = 50
+MUSICIAN_CATEGORY = 'Musician/band'
 
 class FBClient(object):
   def __init__(self):
     oauth_access_token = facebook.get_app_access_token(APP_ID, APP_SECRET)
     self.graph = facebook.GraphAPI(oauth_access_token)
+
+  def find_user(self, name):
+    pages = self.graph.request('search', args={'q': name, 'type': 'page'})
+    ids = [x['id'] for x in pages['data'] if x['category'] == MUSICIAN_CATEGORY][:MAX_USER_REQUEST]
+    if ids:
+      users = self.graph.get_objects(ids)
+      user = max(users.values(), key=lambda x: x['likes'])
+      if int(user['likes']) > LIKE_THRESHOLD:
+        return user
+    return None
 
   def get_set_time_posts(self, username, date):
     set_time_posts = []
@@ -50,8 +63,17 @@ class FBClient(object):
       set_time_posts.append(post)
 
 if __name__ == '__main__':
-  #TESTING: REMOVE
   fb = FBClient()
+
+  #TEST searching
+  pages = fb.graph.request('search', args={'q': 'dillon francis', 'type': 'page'})
+  ids = [x['id'] for x in pages['data'] if x['category'] == MUSICIAN_CATEGORY][:MAX_USER_REQUEST]
+  users = fb.graph.get_objects(ids)
+  user = max(users.values(), key=lambda x: x['likes'])
+  print user.keys()
+  exit()
+
+  #TEST Posts
   for post in fb.get_set_time_posts('iamtchami', None):
     print post['message']
 

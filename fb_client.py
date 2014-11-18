@@ -2,8 +2,6 @@ from datetime import datetime
 from dateutil import tz
 import facebook
 
-import logger
-
 APP_ID = 339774799528645
 APP_SECRET = "0993650e78e2f8a64f096963c601e77b"
 FB_DATE_TIME_FORMAT = '%Y-%m-%dT%H:%M:%S+0000'

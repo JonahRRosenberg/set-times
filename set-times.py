@@ -8,6 +8,7 @@ import urllib2
 
 from artist import Artist
 from fb_client import FBClient
+import logger
 
 EVENTS_URL = "http://www.clubtix.com/latest_events"
 EVENT_DATE_FORMAT = "%a, %b %d %Y"
@@ -69,10 +70,12 @@ def parse_p_artists(soup, artists):
           artists.append(artist)
 
 if __name__ == '__main__':
+  logger.initialize()
+
   try:
     while (True):
-      print "==============================="
-      print "time:", datetime.now()
+      logger.info("===============================")
+      logger.info("time: " + str(datetime.now()))
       events_soup = html_request(EVENTS_URL)
 
       urls = events_soup.find_all('a', class_="eventNameLink")
@@ -83,7 +86,7 @@ if __name__ == '__main__':
 
       for url, event_date in urls:
         if event_date == today:
-          print "url: {0} date: {1}".format(url, event_date)
+          logger.info("url: {0} date: {1}".format(url, event_date))
           soup = html_request(url)
 
           artists = []
@@ -94,16 +97,18 @@ if __name__ == '__main__':
           for artist in artists:
             user = artist.fb_username(fb)
             if user:
-              print "artist:", artist.name, "fb username:", get_username(user)
+              logger.info("artist: {0} fb username: {1}".format(
+                artist.name, get_username(user)))
               try:
                 set_time_posts = fb.get_set_time_posts(user['id'], today)
                 if set_time_posts:
-                  print "found set times. count: {0} sets: {1}".format(
-                      len(set_time_posts), [x['message'] for x in set_time_posts])
+                  logger.info("found set times. count: {0} sets: {1}".format(
+                      len(set_time_posts), [x['message'] for x in set_time_posts]))
               except Exception as ex:
-                print "Unable to query fb. user: {0} ex: {1}".format(get_username(user), ex)
+                logger.error("Unable to query fb. user: {0} ex: {1}".format(
+                  get_username(user), ex))
             else:
-              print "Unable to find user. artist:", artist.name
+              logger.error("Unable to find user. artist:", artist.name)
 
       sleep(TIMEOUT_IN_SECONDS)
   except KeyboardInterrupt:

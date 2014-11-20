@@ -68,44 +68,43 @@ def parse_p_artists(soup, artists):
           artist.add_link(link.get('href'))
           artists.append(artist)
 
-if __name__ == '__main__':
-  try:
-    while (True):
-      print "==============================="
-      print "time:", datetime.now()
-      events_soup = html_request(EVENTS_URL)
+try:
+  while (True):
+    print "==============================="
+    print "time:", datetime.now()
+    events_soup = html_request(EVENTS_URL)
 
-      urls = events_soup.find_all('a', class_="eventNameLink")
-      urls = [(x.get('href'), get_event_date(x)) for x in urls]
+    urls = events_soup.find_all('a', class_="eventNameLink")
+    urls = [(x.get('href'), get_event_date(x)) for x in urls]
 
-      fb = FBClient()
-      today = datetime.now().date()
+    fb = FBClient()
+    today = datetime.now().date()
 
-      for url, event_date in urls:
-        if event_date == today:
-          print "url: {0} date: {1}".format(url, event_date)
-          soup = html_request(url)
+    for url, event_date in urls:
+      if event_date == today:
+        print "url: {0} date: {1}".format(url, event_date)
+        soup = html_request(url)
 
-          artists = []
+        artists = []
 
-          parse_b_artists(soup, artists)
-          parse_p_artists(soup, artists)
+        parse_b_artists(soup, artists)
+        parse_p_artists(soup, artists)
 
-          for artist in artists:
-            user = artist.fb_username(fb)
-            if user:
-              print "artist:", artist.name, "fb username:", get_username(user)
-              try:
-                set_time_posts = fb.get_set_time_posts(user['id'], today)
-                if set_time_posts:
-                  print "found set times. count: {0} sets: {1}".format(
-                      len(set_time_posts), [x['message'] for x in set_time_posts])
-              except Exception as ex:
-                print "Unable to query fb. user: {0} ex: {1}".format(get_username(user), ex)
-            else:
-              print "Unable to find user. artist:", artist.name
+        for artist in artists:
+          user = artist.fb_username(fb)
+          if user:
+            print "artist:", artist.name, "fb username:", get_username(user)
+            try:
+              set_time_posts = fb.get_set_time_posts(user['id'], today)
+              if set_time_posts:
+                print "found set times. count: {0} sets: {1}".format(
+                    len(set_time_posts), [x['message'] for x in set_time_posts])
+            except Exception as ex:
+              print "Unable to query fb. user: {0} ex: {1}".format(get_username(user), ex)
+          else:
+            print "Unable to find user. artist:", artist.name
 
-      sleep(TIMEOUT_IN_SECONDS)
-  except KeyboardInterrupt:
-    pass
+    sleep(TIMEOUT_IN_SECONDS)
+except KeyboardInterrupt:
+  pass
 

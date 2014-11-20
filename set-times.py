@@ -7,6 +7,7 @@ from bs4 import BeautifulSoup
 import urllib2
 
 from artist import Artist
+from constants import *
 from fb_client import FBClient
 
 EVENTS_URL = "http://www.clubtix.com/latest_events"
@@ -72,14 +73,15 @@ if __name__ == '__main__':
   try:
     while (True):
       print "==============================="
-      print "time:", datetime.now()
+      local_time = datetime.now(CHICAGO_TZ)
+      print "Local time:", local_time
       events_soup = html_request(EVENTS_URL)
 
       urls = events_soup.find_all('a', class_="eventNameLink")
       urls = [(x.get('href'), get_event_date(x)) for x in urls]
 
       fb = FBClient()
-      today = datetime.now().date()
+      today = local_time.date()
 
       for url, event_date in urls:
         if event_date == today:

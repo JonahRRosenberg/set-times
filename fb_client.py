@@ -2,6 +2,8 @@ from datetime import datetime
 from dateutil import tz
 import facebook
 
+from constants import *
+
 APP_ID = 339774799528645
 APP_SECRET = "0993650e78e2f8a64f096963c601e77b"
 FB_DATE_TIME_FORMAT = '%Y-%m-%dT%H:%M:%S+0000'
@@ -52,7 +54,7 @@ class FBClient(object):
   def _get_local_time(self, time):
     utc_time = datetime.strptime(time, FB_DATE_TIME_FORMAT).replace(
         tzinfo=tz.tzutc())
-    return utc_time.astimezone(tz.tzlocal())
+    return utc_time.astimezone(CHICAGO_TZ)
 
   def _add_set_times(self, post, date, user_id, set_time_posts):
     created_time = self._get_local_time(post['created_time'])
@@ -65,12 +67,12 @@ if __name__ == '__main__':
   fb = FBClient()
 
   #TEST searching
-  pages = fb.graph.request('search', args={'q': 'dillon francis', 'type': 'page'})
-  ids = [x['id'] for x in pages['data'] if x['category'] == MUSICIAN_CATEGORY][:MAX_USER_REQUEST]
-  users = fb.graph.get_objects(ids)
-  user = max(users.values(), key=lambda x: x['likes'])
-  print user.keys()
-  exit()
+  #pages = fb.graph.request('search', args={'q': 'dillon francis', 'type': 'page'})
+  #ids = [x['id'] for x in pages['data'] if x['category'] == MUSICIAN_CATEGORY][:MAX_USER_REQUEST]
+  #users = fb.graph.get_objects(ids)
+  #user = max(users.values(), key=lambda x: x['likes'])
+  #print user.keys()
+  #exit()
 
   #TEST Posts
   for post in fb.get_set_time_posts('iamtchami', None):

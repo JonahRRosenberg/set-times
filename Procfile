@@ -1,2 +1,2 @@
-worker: python set-times.py --log-file -
+worker: python set-times.py
 

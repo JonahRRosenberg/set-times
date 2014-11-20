@@ -13,7 +13,7 @@ EVENTS_URL = "http://www.clubtix.com/latest_events"
 EVENT_DATE_FORMAT = "%a, %b %d %Y"
 CLUBTIX_REGEX = r".*::(.*)::.*"
 
-TIMEOUT_IN_SECONDS = 30
+TIMEOUT_IN_SECONDS = 15
 
 def html_request(url):
   html = urllib2.urlopen(url).read()

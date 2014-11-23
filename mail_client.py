@@ -2,6 +2,7 @@ import smtplib
 import base64
 
 SENDER = base64.b64decode("c2V0LnRpbWVzLmFwcGxpY2F0aW9uQGdtYWlsLmNvbQ==")
+SENDER_NAME = "Set Times"
 PASSWORD = base64.b64decode("JDN0LXRpbWVz")
 SMTP_SERVER = "smtp.gmail.com"
 SMTP_PORT = 587
@@ -11,7 +12,7 @@ if __name__ == '__main__':
   subject = "Gmail SMTP Test"
   body = "HERRO"
 
-  headers = "\r\n".join(["From: " + "Set Times",
+  headers = "\r\n".join(["From: " + "SENDER_NAME",
              "Subject: " + subject,
              "To: " + recipient,
              "MIME-Version: 1.0",

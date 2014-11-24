@@ -7,25 +7,41 @@ PASSWORD = base64.b64decode("JDN0LXRpbWVz")
 SMTP_SERVER = "smtp.gmail.com"
 SMTP_PORT = 587
 
+class MailClient(object):
+  def __init__(self):
+    self.session = smtplib.SMTP(SMTP_SERVER, SMTP_PORT)
+    self.session.ehlo()
+    self.session.starttls()
+    self.session.ehlo
+    self.session.login(SENDER, PASSWORD)
+    print "Successfully logged into mail client"
+
+  def shutdown(self):
+    print "Quitting email session"
+    self.session.quit()
+
+  def send(self, to_email, event, message):
+    subject = "Update on your event {0}".format(event)
+    headers = "\r\n".join(["From: " + SENDER_NAME,
+               "Subject: " + subject,
+               "To: " + to_email,
+               "MIME-Version: 1.0",
+               "Content-Type: text/html"])
+    body = message
+    full_msg = headers + "\r\n\r\n" + body
+
+    print "Sending email. to_email: {0} full_msg: {1}".format(
+        to_email, full_msg)
+    self.session.sendmail(SENDER, to_email, full_msg)
+
 if __name__ == '__main__':
-  recipient = "JonahRRosenberg@gmail.com"
-  subject = "Gmail SMTP Test"
-  body = "HERRO"
+  to_email = "JonahRRosenberg@gmail.com"
 
-  headers = "\r\n".join(["From: " + "SENDER_NAME",
-             "Subject: " + subject,
-             "To: " + recipient,
-             "MIME-Version: 1.0",
-             "Content-Type: text/html"])
+  client = MailClient()
+  client.send(
+      "JonahRRosenberg@gmail.com",
+      "Mad Zoo",
+      "Test Message")
 
-  session = smtplib.SMTP(SMTP_SERVER, SMTP_PORT)
-  session.ehlo()
-  session.starttls()
-  session.ehlo
-  session.login(SENDER, PASSWORD)
-   
-  session.sendmail(SENDER, recipient, headers + "\r\n\r\n" + body)
-  print "Sent!"
-  session.quit()
-  print "Quit"
+  client.shutdown()
 

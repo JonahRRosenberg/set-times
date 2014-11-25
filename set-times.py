@@ -1,4 +1,5 @@
 import re
+from collections import defaultdict
 from datetime import datetime
 from datetime import date
 from time import sleep
@@ -69,8 +70,33 @@ def parse_p_artists(soup, artists):
           artist.add_link(link.get('href'))
           artists.append(artist)
 
+def process_event(event_date, url, fb):
+  print "Procesing event url: {0} date: {1}".format(url, event_date)
+  soup = html_request(url)
+
+  artists = []
+
+  parse_b_artists(soup, artists)
+  parse_p_artists(soup, artists)
+
+  for artist in artists:
+    user = artist.fb_username(fb)
+    if user:
+      print "artist:", artist.name, "fb username:", get_username(user)
+      try:
+        set_time_posts = fb.get_set_time_posts(user['id'], today)
+        if set_time_posts:
+          print "found set times. count: {0} sets: {1}".format(
+              len(set_time_posts), [x['message'] for x in set_time_posts])
+      except Exception as ex:
+        print "Unable to query fb. user: {0} ex: {1}".format(get_username(user), ex)
+    else:
+      print "Unable to find user. artist:", artist.name
+
 if __name__ == '__main__':
   try:
+    events_by_date = defaultdict(set)
+
     while (True):
       print "==============================="
       local_time = datetime.now(CHICAGO_TZ)
@@ -84,28 +110,12 @@ if __name__ == '__main__':
       today = local_time.date()
 
       for url, event_date in urls:
-        if event_date == today:
-          print "url: {0} date: {1}".format(url, event_date)
-          soup = html_request(url)
+        events_by_date[event_date].add(url)
 
-          artists = []
-
-          parse_b_artists(soup, artists)
-          parse_p_artists(soup, artists)
-
-          for artist in artists:
-            user = artist.fb_username(fb)
-            if user:
-              print "artist:", artist.name, "fb username:", get_username(user)
-              try:
-                set_time_posts = fb.get_set_time_posts(user['id'], today)
-                if set_time_posts:
-                  print "found set times. count: {0} sets: {1}".format(
-                      len(set_time_posts), [x['message'] for x in set_time_posts])
-              except Exception as ex:
-                print "Unable to query fb. user: {0} ex: {1}".format(get_username(user), ex)
-            else:
-              print "Unable to find user. artist:", artist.name
+      for event_date, urls in events_by_date.iteritems():
+        for url in urls:
+          if event_date == today:
+            process_event(event_date, url, fb)
 
       sleep(TIMEOUT_IN_SECONDS)
   except KeyboardInterrupt:

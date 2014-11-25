@@ -63,18 +63,18 @@ class FBClient(object):
         created_time.date() == date):
       set_time_posts.append(post)
 
-if __name__ == '__main__':
-  fb = FBClient()
+fb_client = FBClient()
 
+if __name__ == '__main__':
   #TEST searching
-  #pages = fb.graph.request('search', args={'q': 'dillon francis', 'type': 'page'})
-  #ids = [x['id'] for x in pages['data'] if x['category'] == MUSICIAN_CATEGORY][:MAX_USER_REQUEST]
-  #users = fb.graph.get_objects(ids)
-  #user = max(users.values(), key=lambda x: x['likes'])
-  #print user.keys()
-  #exit()
+  pages = fb_client.graph.request('search', args={'q': 'dillon francis', 'type': 'page'})
+  ids = [x['id'] for x in pages['data'] if x['category'] == MUSICIAN_CATEGORY][:MAX_USER_REQUEST]
+  users = fb_client.graph.get_objects(ids)
+  user = max(users.values(), key=lambda x: x['likes'])
+  print user.keys()
+  exit()
 
   #TEST Posts
-  for post in fb.get_set_time_posts('iamtchami', None):
-    print post['message']
+  #for post in fb_client.get_set_time_posts('iamtchami', None):
+  #  print post['message']
 

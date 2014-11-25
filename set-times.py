@@ -9,7 +9,7 @@ import urllib2
 
 from artist import Artist
 from constants import *
-from fb_client import FBClient
+from fb_client import fb_client
 
 EVENTS_URL = "http://www.clubtix.com/latest_events"
 EVENT_DATE_FORMAT = "%a, %b %d %Y"
@@ -70,7 +70,7 @@ def parse_p_artists(soup, artists):
           artist.add_link(link.get('href'))
           artists.append(artist)
 
-def process_event(event_date, url, fb):
+def process_event(event_date, url):
   print "Procesing event url: {0} date: {1}".format(url, event_date)
   soup = html_request(url)
 
@@ -84,12 +84,12 @@ def process_event(event_date, url, fb):
     if user:
       print "artist:", artist.name, "fb username:", get_username(user)
       try:
-        set_time_posts = fb.get_set_time_posts(user['id'], today)
+        set_time_posts = fb_client.get_set_time_posts(user['id'], today)
         if set_time_posts:
           print "found set times. count: {0} sets: {1}".format(
               len(set_time_posts), [x['message'] for x in set_time_posts])
       except Exception as ex:
-        print "Unable to query fb. user: {0} ex: {1}".format(get_username(user), ex)
+        print "Unable to query FB. user: {0} ex: {1}".format(get_username(user), ex)
     else:
       print "Unable to find user. artist:", artist.name
 
@@ -106,7 +106,6 @@ if __name__ == '__main__':
       urls = events_soup.find_all('a', class_="eventNameLink")
       urls = [(x.get('href'), get_event_date(x)) for x in urls]
 
-      fb = FBClient()
       today = local_time.date()
 
       for url, event_date in urls:
@@ -115,7 +114,7 @@ if __name__ == '__main__':
       for event_date, urls in events_by_date.iteritems():
         for url in urls:
           if event_date == today:
-            process_event(event_date, url, fb)
+            process_event(event_date, url)
 
       sleep(TIMEOUT_IN_SECONDS)
   except KeyboardInterrupt:

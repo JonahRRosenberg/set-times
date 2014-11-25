@@ -10,12 +10,28 @@ import urllib2
 from artist import Artist
 from constants import *
 from fb_client import fb_client
+from mail_client import mail_client
 
 EVENTS_URL = "http://www.clubtix.com/latest_events"
 EVENT_DATE_FORMAT = "%a, %b %d %Y"
 CLUBTIX_REGEX = r".*::(.*)::.*"
+MESSAGE_POST = """
+    We found a possible Set Time posting for your show:\n
+    <br><br>
+    {0}\n
+    <br><br>
+    From: {1}\n
+    <br><br>
+    Message: {2}\n
+    <br><br>
+    Link: {3}\n
+    """
 
 TIMEOUT_IN_SECONDS = 15
+
+MY_EMAIL = "JonahRRosenberg@gmail.com"
+
+processed_posts = set()
 
 def html_request(url):
   html = urllib2.urlopen(url).read()
@@ -70,6 +86,15 @@ def parse_p_artists(soup, artists):
           artist.add_link(link.get('href'))
           artists.append(artist)
 
+def process_post(post, event_name):
+  if post.id() not in processed_posts:
+    message = MESSAGE_POST.format(
+        event_name, post.name(), post.message(), post.link())
+    mail_client.send(MY_EMAIL, event_name, message)
+    processed_posts.add(post.id())
+  else:
+    print "post already processed. id:", post.id()
+
 def process_event(event_date, url):
   print "Procesing event url: {0} date: {1}".format(url, event_date)
   soup = html_request(url)
@@ -80,16 +105,19 @@ def process_event(event_date, url):
   parse_p_artists(soup, artists)
 
   for artist in artists:
-    user = artist.fb_username(fb)
+    user = artist.fb_username()
     if user:
       print "artist:", artist.name, "fb username:", get_username(user)
       try:
         set_time_posts = fb_client.get_set_time_posts(user['id'], today)
         if set_time_posts:
           print "found set times. count: {0} sets: {1}".format(
-              len(set_time_posts), [x['message'] for x in set_time_posts])
+              len(set_time_posts), [x.message() for x in set_time_posts])
+          for post in set_time_posts:
+            #TODO: url should be event name
+            process_post(post, url)
       except Exception as ex:
-        print "Unable to query FB. user: {0} ex: {1}".format(get_username(user), ex)
+        print "Exception querying FB. user: {0} ex: {1}".format(get_username(user), ex)
     else:
       print "Unable to find user. artist:", artist.name
 

@@ -34,14 +34,15 @@ class MailClient(object):
         to_email, full_msg)
     self.session.sendmail(SENDER, to_email, full_msg)
 
+mail_client = MailClient()
+
 if __name__ == '__main__':
   to_email = "JonahRRosenberg@gmail.com"
 
-  client = MailClient()
-  client.send(
+  mail_client.send(
       "JonahRRosenberg@gmail.com",
       "Mad Zoo",
       "Test Message")
 
-  client.shutdown()
+  mail_client.shutdown()
 

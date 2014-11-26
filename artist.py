@@ -1,6 +1,6 @@
 import re
 
-from fb_client import fb_client
+from fb_client import FBClient
 from utility import *
 
 FB_REGEX = r".*facebook.com\/([\w,.]*)\/?"
@@ -15,7 +15,7 @@ class Artist(object):
 
   def fb_username(self):
     try:
-      user = fb_client.find_user(self.name)
+      user = FBClient().find_user(self.name)
       if (user):
         return user
     except Exception as ex:

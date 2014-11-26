@@ -8,13 +8,12 @@ SMTP_SERVER = "smtp.gmail.com"
 SMTP_PORT = 587
 
 class MailClient(object):
-  def __init__(self):
-    self.session = smtplib.SMTP(SMTP_SERVER, SMTP_PORT)
-    self.session.ehlo()
-    self.session.starttls()
-    self.session.ehlo
-    self.session.login(SENDER, PASSWORD)
-    print "Successfully logged into mail client"
+  session = smtplib.SMTP(SMTP_SERVER, SMTP_PORT)
+  session.ehlo()
+  session.starttls()
+  session.ehlo
+  session.login(SENDER, PASSWORD)
+  print "Successfully logged into mail client"
 
   def shutdown(self):
     print "Quitting email session"
@@ -34,15 +33,13 @@ class MailClient(object):
         to_email, full_msg)
     self.session.sendmail(SENDER, to_email, full_msg)
 
-mail_client = MailClient()
-
 if __name__ == '__main__':
   to_email = "JonahRRosenberg@gmail.com"
 
-  mail_client.send(
+  MailClient().send(
       "JonahRRosenberg@gmail.com",
       "Mad Zoo",
       "Test Message")
 
-  mail_client.shutdown()
+  MailClient().shutdown()
 

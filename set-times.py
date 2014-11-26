@@ -9,8 +9,8 @@ import urllib2
 
 from artist import Artist
 from constants import *
-from fb_client import fb_client
-from mail_client import mail_client
+from fb_client import FBClient
+from mail_client import MailClient
 
 EVENTS_URL = "http://www.clubtix.com/latest_events"
 EVENT_DATE_FORMAT = "%a, %b %d %Y"
@@ -90,7 +90,7 @@ def process_post(post, event_name):
   if post.id() not in processed_posts:
     message = MESSAGE_POST.format(
         event_name, post.name(), post.message(), post.link())
-    mail_client.send(MY_EMAIL, event_name, message)
+    MailClient().send(MY_EMAIL, event_name, message)
     processed_posts.add(post.id())
   else:
     print "post already processed. id:", post.id()
@@ -109,7 +109,7 @@ def process_event(event_date, url):
     if user:
       print "artist:", artist.name, "fb username:", get_username(user)
       try:
-        set_time_posts = fb_client.get_set_time_posts(user['id'], today)
+        set_time_posts = FBClient().get_set_time_posts(user['id'], today)
         if set_time_posts:
           print "found set times. count: {0} sets: {1}".format(
               len(set_time_posts), [x.message() for x in set_time_posts])

@@ -3,7 +3,7 @@ from dateutil import tz
 import facebook
 
 from constants import *
-from utility import *
+from timeline_post import TimelinePost
 
 APP_ID = 339774799528645
 APP_SECRET = "0993650e78e2f8a64f096963c601e77b"
@@ -12,33 +12,9 @@ LIKE_THRESHOLD = 2000
 MAX_USER_REQUEST = 50
 MUSICIAN_CATEGORY = 'Musician/band'
 
-class TimelinePost(object):
-  def __init__(self, post):
-    self.post = post
-
-  def id(self):
-    return self.post['id']
-
-  def name(self):
-    return self.post['from']['name']
-
-  def message(self):
-    return clean_str(self.post['message'])
-
-  def link(self):
-    return (
-        self.post['link']
-        if 'link' in self.post
-        else "Unknown Link")
-
-  def created_time(self):
-    raise RuntimeError("Not implmented yet")
-
-
 class FBClient(object):
-  def __init__(self):
-    oauth_access_token = facebook.get_app_access_token(APP_ID, APP_SECRET)
-    self.graph = facebook.GraphAPI(oauth_access_token)
+  oauth_access_token = facebook.get_app_access_token(APP_ID, APP_SECRET)
+  graph = facebook.GraphAPI(oauth_access_token)
 
   def find_user(self, name):
     pages = self.graph.request('search', args={'q': name, 'type': 'page'})
@@ -87,19 +63,17 @@ class FBClient(object):
         created_time.date() == date):
       set_time_posts.append(TimelinePost(post))
 
-fb_client = FBClient()
-
 if __name__ == '__main__':
   #TEST searching
-  #pages = fb_client.graph.request('search', args={'q': 'dillon francis', 'type': 'page'})
-  #ids = [x['id'] for x in pages['data'] if x['category'] == MUSICIAN_CATEGORY][:MAX_USER_REQUEST]
-  #users = fb_client.graph.get_objects(ids)
-  #user = max(users.values(), key=lambda x: x['likes'])
-  #print user.keys()
+  pages = FBClient().graph.request('search', args={'q': 'dillon francis', 'type': 'page'})
+  ids = [x['id'] for x in pages['data'] if x['category'] == MUSICIAN_CATEGORY][:MAX_USER_REQUEST]
+  users = FBClient().graph.get_objects(ids)
+  user = max(users.values(), key=lambda x: x['likes'])
+  print user.keys()
   #exit()
 
   #TEST Posts
-  for post in fb_client.get_set_time_posts('andyc', None):
+  for post in FBClient().get_set_time_posts('andyc', None):
     print "name:", post.name()
     print "id:", post.id()
     print "message:", post.message()

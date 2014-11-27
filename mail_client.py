@@ -38,7 +38,7 @@ if __name__ == '__main__':
 
   MailClient().send(
       "JonahRRosenberg@gmail.com",
-      "Mad Zoo",
+      "Test Subject",
       "Test Message")
 
   MailClient().shutdown()

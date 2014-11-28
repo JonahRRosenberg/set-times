@@ -50,7 +50,7 @@ class FBClient(object):
   def _is_set_time(self, message):
     message = message.lower()
     return (('set' in message and 'time' in message)
-        or 'on at' in message)
+        or ' on at' in message)
 
   def _add_set_times(self, post, date, user_id, set_time_posts):
     fb_post = FacebookTimelinePost(post)

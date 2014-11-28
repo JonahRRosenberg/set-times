@@ -10,6 +10,7 @@ import urllib2
 from artist import Artist
 from constants import *
 from fb_client import FBClient
+from twitter_client import TwitterClient
 from mail_client import MailClient
 
 EVENTS_URL = "http://www.clubtix.com/latest_events"
@@ -95,6 +96,12 @@ def process_post(post, event_name):
   else:
     print "post already processed. id:", post.id()
 
+def process_posts(set_time_posts, event_name):
+  print "found set times. count: {0} sets: {1}".format(
+      len(set_time_posts), [x.message() for x in set_time_posts])
+  for post in set_time_posts:
+    process_post(post, event_name)
+
 def process_event(event_date, url):
   print "Procesing event url: {0} date: {1}".format(url, event_date)
   soup = html_request(url)
@@ -105,21 +112,32 @@ def process_event(event_date, url):
   parse_p_artists(soup, artists)
 
   for artist in artists:
-    user = artist.fb_username()
-    if user:
-      print "artist:", artist.name, "fb username:", get_username(user)
+    fb_user = artist.fb_user()
+    if fb_user:
+      print "artist:", artist.name, "fb username:", get_username(fb_user)
       try:
-        set_time_posts = FBClient().get_set_time_posts(user['id'], today)
+        set_time_posts = FBClient().get_set_time_posts(fb_user['id'], today)
         if set_time_posts:
-          print "found set times. count: {0} sets: {1}".format(
-              len(set_time_posts), [x.message() for x in set_time_posts])
-          for post in set_time_posts:
-            #TODO: url should be event name
-            process_post(post, url)
+          #TODO: url should be event name
+          process_posts(set_time_posts, url)
       except Exception as ex:
-        print "Exception querying FB. user: {0} ex: {1}".format(get_username(user), ex)
+        print "Exception querying FB. fb_user: {0} ex: {1}".format(get_username(fb_user), ex)
     else:
-      print "Unable to find user. artist:", artist.name
+      print "Unable to find fb_user. artist:", artist.name
+
+    twitter_user = artist.twitter_user()
+    if twitter_user:
+      print "artist:", artist.name, "twitter username:", twitter_user.screen_name
+      try:
+        set_time_posts = TwitterClient().get_set_time_posts(
+            twitter_user.screen_name, today)
+        if set_time_posts:
+          process_posts(set_time_posts, url)
+      except Exception as ex:
+        print "Exception querying twitter. twitter_user: {0} ex: {1}".format(
+            twitter_user.screen_name, ex)
+    else:
+      print "Unable to find twitter_user. artist:", artist.name
 
 if __name__ == '__main__':
   try:

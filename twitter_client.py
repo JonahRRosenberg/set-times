@@ -17,10 +17,9 @@ class TwitterClient(object):
 
   def find_user(self, name):
     users = self.api.search_users(q=name)
-    user = max(users, key=lambda x: x.followers_count)
-    return user if user.followers_count > FOLLOWERS_THRESHOLD else None
+    return users[0] if len(users) > 0 else None
 
-  def get_set_times_posts(self, screen_name, date):
+  def get_set_time_posts(self, screen_name, date):
     set_time_posts = []
 
     timeline = self.api.user_timeline(screen_name)
@@ -34,13 +33,14 @@ class TwitterClient(object):
   def _is_set_time(self, post):
     message = post.message().lower()
     return (('set' in message and 'time' in message)
-        or 'on at' in message)
+        or ' on at' in message)
 
 if __name__ == "__main__":
-  user = TwitterClient().find_user("Mat Zo")
+  user = TwitterClient().find_user("Bro Safari")
+  print user.screen_name
 
   today = datetime.now().date()
 
-  set_time_posts = TwitterClient().get_set_times_posts(user.screen_name, today)
+  set_time_posts = TwitterClient().get_set_time_posts(user.screen_name, today)
   print set_time_posts
 

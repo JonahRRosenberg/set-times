@@ -3,7 +3,8 @@ from dateutil import tz
 import facebook
 
 from constants import *
-from timeline_post import TimelinePost
+from timeline_post import FacebookTimelinePost
+import utility
 
 APP_ID = 339774799528645
 APP_SECRET = "0993650e78e2f8a64f096963c601e77b"
@@ -18,7 +19,8 @@ class FBClient(object):
 
   def find_user(self, name):
     pages = self.graph.request('search', args={'q': name, 'type': 'page'})
-    ids = [x['id'] for x in pages['data'] if x['category'] == MUSICIAN_CATEGORY][:MAX_USER_REQUEST]
+    ids = [x['id'] for x in pages['data']
+                   if x['category'] == MUSICIAN_CATEGORY][:MAX_USER_REQUEST]
     if ids:
       users = self.graph.get_objects(ids)
       user = max(users.values(), key=lambda x: x['likes'])
@@ -61,7 +63,7 @@ class FBClient(object):
     if (post['from']['id'] == user_id and
         self._is_set_time(post['message']) and
         created_time.date() == date):
-      set_time_posts.append(TimelinePost(post))
+      set_time_posts.append(FacebookTimelinePost(post))
 
 if __name__ == '__main__':
   #TEST searching

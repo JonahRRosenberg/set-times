@@ -1,13 +1,13 @@
 import re
 
 from fb_client import FBClient
-from utility import *
+import utility
 
 FB_REGEX = r".*facebook.com\/([\w,.]*)\/?"
 
 class Artist(object):
   def __init__(self, name):
-    self.name = clean_str(name)
+    self.name = utility.clean_str(name)
     self.links = []
 
   def add_link(self, link):

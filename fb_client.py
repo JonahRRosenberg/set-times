@@ -8,7 +8,6 @@ import utility
 
 APP_ID = 339774799528645
 APP_SECRET = "0993650e78e2f8a64f096963c601e77b"
-FB_DATE_TIME_FORMAT = '%Y-%m-%dT%H:%M:%S+0000'
 LIKE_THRESHOLD = 500
 MAX_USER_REQUEST = 50
 MUSICIAN_CATEGORY = 'Musician/band'
@@ -53,17 +52,12 @@ class FBClient(object):
     return (('set' in message and 'time' in message)
         or 'on at' in message)
 
-  def _get_local_time(self, time):
-    utc_time = datetime.strptime(time, FB_DATE_TIME_FORMAT).replace(
-        tzinfo=tz.tzutc())
-    return utc_time.astimezone(CHICAGO_TZ)
-
   def _add_set_times(self, post, date, user_id, set_time_posts):
-    created_time = self._get_local_time(post['created_time'])
-    if (post['from']['id'] == user_id and
-        self._is_set_time(post['message']) and
-        created_time.date() == date):
-      set_time_posts.append(FacebookTimelinePost(post))
+    fb_post = FacebookTimelinePost(post)
+    if (fb_post.user_id() == user_id and
+        self._is_set_time(fb_post.message()) and
+        fb_post.created_time().date() == date):
+      set_time_posts.append(fb_post)
 
 if __name__ == '__main__':
   #TEST searching

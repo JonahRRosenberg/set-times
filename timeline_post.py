@@ -1,6 +1,9 @@
+from datetime import datetime
+
 from constants import *
 import utility
 
+FB_DATE_TIME_FORMAT = '%Y-%m-%dT%H:%M:%S+0000'
 TWEET_URL = "http://www.twitter.com/{0}/status/{1}"
 
 def tweet_url(screen_name, status_id):
@@ -12,6 +15,9 @@ class FacebookTimelinePost(object):
 
   def id(self):
     return self.post['id']
+
+  def user_id(self):
+    return self.post['from']['id']
 
   def name(self):
     return self.post['from']['name']
@@ -26,7 +32,8 @@ class FacebookTimelinePost(object):
         else "Unknown Link")
 
   def created_time(self):
-    raise RuntimeError("Not implemented yet")
+    utc_time = datetime.strptime(self.post['created_time'], FB_DATE_TIME_FORMAT)
+    return utility.to_local_tz(utc_time)
 
 class TwitterTimelinePost(object):
   def __init__(self, post):

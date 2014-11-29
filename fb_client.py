@@ -61,17 +61,15 @@ class FBClient(object):
 
 if __name__ == '__main__':
   #TEST searching
-  pages = FBClient().graph.request('search', args={'q': 'dillon francis', 'type': 'page'})
-  ids = [x['id'] for x in pages['data'] if x['category'] == MUSICIAN_CATEGORY][:MAX_USER_REQUEST]
-  users = FBClient().graph.get_objects(ids)
-  user = max(users.values(), key=lambda x: x['likes'])
-  print user.keys()
-  #exit()
+  #pages = FBClient().graph.request('search', args={'q': 'dillon francis', 'type': 'page'})
+  #ids = [x['id'] for x in pages['data'] if x['category'] == MUSICIAN_CATEGORY][:MAX_USER_REQUEST]
+  #users = FBClient().graph.get_objects(ids)
+  #user = max(users.values(), key=lambda x: x['likes'])
+  #print user.keys()
 
   #TEST Posts
-  for post in FBClient().get_set_time_posts('andyc', None):
-    print "name:", post.name()
-    print "id:", post.id()
-    print "message:", post.message()
-    print "link:", post.link()
+  today = datetime.now().date()
+
+  for post in FBClient().get_set_time_posts('BroSafari', today):
+    print "post:", post
 

@@ -35,6 +35,10 @@ class FacebookTimelinePost(object):
     utc_time = datetime.strptime(self.post['created_time'], FB_DATE_TIME_FORMAT)
     return utility.to_local_tz(utc_time)
 
+  def __str__(self):
+    return "Id: '{}' User Id: {} Name: '{}' Message: '{}' Link: '{}' Created Time: '{}'".format(
+        self.id(), self.user_id(), self.name(), self.message(), self.link(), self.created_time())
+
 class TwitterTimelinePost(object):
   def __init__(self, post):
     self.post = post
@@ -53,3 +57,7 @@ class TwitterTimelinePost(object):
 
   def created_time(self):
     return utility.to_local_tz(self.post.created_at)
+
+  def __str__(self):
+    return "Id: '{}' Name: '{}' Message: '{}' Link: '{}' Created Time: '{}'".format(
+        self.id(), self.name(), self.message(), self.link(), self.created_time())

@@ -29,9 +29,15 @@ class TwitterClient(object):
     return set_time_posts
 
   def _is_set_time(self, post):
-    message = post.message().lower()
-    return (('set' in message and 'time' in message)
-        or ' on at' in message)
+    if not self._is_retweet(post):
+      message = post.message().lower()
+      return (('set' in message and 'time' in message)
+          or ' on at' in message)
+    else:
+      return False
+
+  def _is_retweet(self, post):
+    return hasattr(post.post, "retweeted_status")
 
 if __name__ == "__main__":
   user = TwitterClient().find_user("Bro Safari")

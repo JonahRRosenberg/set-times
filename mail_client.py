@@ -20,18 +20,24 @@ class MailClient(object):
     self.session.quit()
 
   def send(self, to_email, event, message):
-    subject = "Update on your event {0}".format(event)
-    headers = "\r\n".join(["From: " + SENDER_NAME,
-               "Subject: " + subject,
-               "To: " + to_email,
-               "MIME-Version: 1.0",
-               "Content-Type: text/html"])
-    body = message
-    full_msg = headers + "\r\n\r\n" + body
+    #TODO: Check for if still connected and continue to retry
 
-    print "Sending email. to_email: {0} full_msg: {1}".format(
-        to_email, full_msg)
-    self.session.sendmail(SENDER, to_email, full_msg)
+    try:
+      subject = "Update on your event {0}".format(event)
+      headers = "\r\n".join(["From: " + SENDER_NAME,
+                 "Subject: " + subject,
+                 "To: " + to_email,
+                 "MIME-Version: 1.0",
+                 "Content-Type: text/html"])
+      body = message
+      full_msg = headers + "\r\n\r\n" + body
+
+      print "Sending email. to_email: {0} full_msg: {1}".format(
+          to_email, full_msg)
+      self.session.sendmail(SENDER, to_email, full_msg)
+    except Exception as ex:
+      print "ERROR: Exception sending email. ex: {0} message: {1}".format(
+          ex, full_msg)
 
 if __name__ == '__main__':
   to_email = "JonahRRosenberg@gmail.com"

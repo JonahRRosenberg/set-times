@@ -91,7 +91,11 @@ def process_post(post, event_name):
   if post.id() not in processed_posts:
     message = MESSAGE_POST.format(
         event_name, post.name(), post.message(), post.link())
-    MailClient().send(MY_EMAIL, event_name, message)
+    try:
+      MailClient().send(MY_EMAIL, event_name, message)
+    except Exception as ex:
+      print "Exception sending email:", ex
+      return
     processed_posts.add(post.id())
   else:
     print "post already processed. id:", post.id()

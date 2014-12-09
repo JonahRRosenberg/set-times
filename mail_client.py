@@ -8,17 +8,6 @@ SMTP_SERVER = "smtp.gmail.com"
 SMTP_PORT = 587
 
 class MailClient(object):
-  session = smtplib.SMTP(SMTP_SERVER, SMTP_PORT)
-  session.ehlo()
-  session.starttls()
-  session.ehlo
-  session.login(SENDER, PASSWORD)
-  print "Successfully logged into mail client"
-
-  def shutdown(self):
-    print "Quitting email session"
-    self.session.quit()
-
   def send(self, to_email, event, message):
     #TODO: Check for if still connected and continue to retry
 
@@ -32,20 +21,36 @@ class MailClient(object):
       body = message
       full_msg = headers + "\r\n\r\n" + body
 
+      session = self._create_session()
+
       print "Sending email. to_email: {0} full_msg: {1}".format(
           to_email, full_msg)
-      self.session.sendmail(SENDER, to_email, full_msg)
+      session.sendmail(SENDER, to_email, full_msg)
+
+      self._quit_session(session)
     except Exception as ex:
       print "ERROR: Exception sending email. ex: {0} message: {1}".format(
           ex, full_msg)
+      raise
+
+  def _create_session(self):
+    session = smtplib.SMTP(SMTP_SERVER, SMTP_PORT)
+    session.ehlo()
+    session.starttls()
+    session.ehlo
+    session.login(SENDER, PASSWORD)
+    print "Successfully logged into mail client"
+    return session
+
+  def _quit_session(self, session):
+    print "Quitting email session"
+    session.quit()
 
 if __name__ == '__main__':
   to_email = "JonahRRosenberg@gmail.com"
 
   MailClient().send(
       "JonahRRosenberg@gmail.com",
-      "Test Subject",
+      "Test Event",
       "Test Message")
-
-  MailClient().shutdown()
 

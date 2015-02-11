@@ -52,21 +52,13 @@ def parse_b_artists(soup, artists):
     artists_p = b.parent
 
     curArtist = None
-    looking_for_links = False
     for child in artists_p.contents:
-      if looking_for_links and curArtist and child.name == "a":
-        curArtist.add_link(child.get('href'))
-      else:
-        if child.name == "b":
-          artist_match = re.match(CLUBTIX_REGEX, child.text)
-          if artist_match:
-            artist = artist_match.group(1).strip().lower()
-            curArtist = Artist(artist)
-            artists.append(curArtist)
-        elif child == "[ ":
-          looking_for_links = True
-        elif child == " ]":
-          looking_for_links = False
+      if child.name == "b":
+        artist_match = re.match(CLUBTIX_REGEX, child.text)
+        if artist_match:
+          artist = artist_match.group(1).strip().lower()
+          curArtist = Artist(artist)
+          artists.append(curArtist)
 
 def parse_p_artists(soup, artists):
   artists_p = [p for p in soup.find_all("p") if re.match(CLUBTIX_REGEX, p.text) is not None]
@@ -80,12 +72,9 @@ def parse_p_artists(soup, artists):
           b.next_sibling and
           "::" in b.previous_sibling and
           "::" in b.next_sibling):
-        link = b.find_next("a")
-        if link:
-          name = b.text.strip().lower()
-          artist = Artist(name)
-          artist.add_link(link.get('href'))
-          artists.append(artist)
+        name = b.text.strip().lower()
+        artist = Artist(name)
+        artists.append(artist)
 
 def process_post(post, event_name):
   if post.id() not in processed_posts:

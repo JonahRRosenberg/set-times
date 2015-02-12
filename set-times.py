@@ -15,7 +15,7 @@ from mail_client import MailClient
 
 EVENTS_URL = "http://www.clubtix.com/latest_events"
 EVENT_DATE_FORMAT = "%a, %b %d %Y"
-CLUBTIX_REGEX = r".*::(.*)::.*"
+CLUBTIX_REGEX = r".*:: (.*) ::.*"
 MESSAGE_POST = """
     We found a possible Set Time posting for your show:\n
     <br><br>
@@ -61,10 +61,25 @@ def parse_b_artists(soup, artists):
           artists.append(curArtist)
 
 def parse_p_artists(soup, artists):
+  #TODO: Replace this simpler method with parse_pb_artists?
+  # Test for all urls
+  # May need to narrow down regex
+
   artists_p = [p for p in soup.find_all("p") if re.match(CLUBTIX_REGEX, p.text) is not None]
   if len(artists_p) > 0:
     artists_p = artists_p[0]
-    looking_for_artists = False
+    artist_match = re.match(CLUBTIX_REGEX, artists_p.text)
+    if artist_match:
+      artist = artist_match.group(1).strip().lower()
+      print artist
+      #curArtist = Artist(artist)
+      #artists.append(curArtist)
+
+
+def parse_pb_artists(soup, artists):
+  artists_p = [p for p in soup.find_all("p") if re.match(CLUBTIX_REGEX, p.text) is not None]
+  if len(artists_p) > 0:
+    artists_p = artists_p[0]
 
     bs = artists_p.find_all("b")
     for b in bs:
@@ -102,7 +117,8 @@ def process_event(event_date, url):
   artists = []
 
   parse_b_artists(soup, artists)
-  parse_p_artists(soup, artists)
+  #parse_p_artists(soup, artists)
+  parse_pb_artists(soup, artists)
 
   for artist in artists:
     fb_user = artist.fb_user()

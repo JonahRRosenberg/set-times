@@ -15,8 +15,7 @@ from mail_client import MailClient
 
 EVENTS_URL = "http://www.clubtix.com/latest_events"
 EVENT_DATE_FORMAT = "%a, %b %d %Y"
-#TODO: Only 2 :: ?
-CLUBTIX_REGEX = r".*:: (.*) ::.*"
+CLUBTIX_REGEX = r".*:: (.*) ::(?!::).*"
 MESSAGE_POST = """
     We found a possible Set Time posting for your show:\n
     <br><br>

@@ -15,6 +15,7 @@ from mail_client import MailClient
 
 EVENTS_URL = "http://www.clubtix.com/latest_events"
 EVENT_DATE_FORMAT = "%a, %b %d %Y"
+#TODO: Only 2 :: ?
 CLUBTIX_REGEX = r".*:: (.*) ::.*"
 MESSAGE_POST = """
     We found a possible Set Time posting for your show:\n
@@ -27,6 +28,7 @@ MESSAGE_POST = """
     <br><br>
     Link: {3}\n
     """
+MAX_ARTIST_LEN = 45
 
 TIMEOUT_IN_SECONDS = 15
 
@@ -46,37 +48,22 @@ def get_event_date(url):
 def get_username(user):
   return user['username'] if 'username' in user else user['id']
 
-def parse_b_artists(soup, artists):
-  b = soup.find("b", text=re.compile(CLUBTIX_REGEX))
-  if b:
-    artists_p = b.parent
+def check_matches(text, artists):
+  artist_match = re.match(CLUBTIX_REGEX, text)
+  if artist_match:
+    artist = artist_match.group(1).strip().lower()
+    if len(artist) <= MAX_ARTIST_LEN:
+      artists.append(Artist(artist))
+    else:
+      print "Ignoring artist, name is too long. artist:", \
+          artist, "len:", len(artist)
 
-    curArtist = None
-    for child in artists_p.contents:
-      if child.name == "b":
-        artist_match = re.match(CLUBTIX_REGEX, child.text)
-        if artist_match:
-          artist = artist_match.group(1).strip().lower()
-          curArtist = Artist(artist)
-          artists.append(curArtist)
+def parse_artist_tag_matches(soup, artists):
+  tags = soup.find_all(text=re.compile(CLUBTIX_REGEX))
+  for tag in tags:
+    check_matches(str(tag), artists)
 
-def parse_p_artists(soup, artists):
-  #TODO: Replace this simpler method with parse_pb_artists?
-  # Test for all urls
-  # May need to narrow down regex
-
-  artists_p = [p for p in soup.find_all("p") if re.match(CLUBTIX_REGEX, p.text) is not None]
-  if len(artists_p) > 0:
-    artists_p = artists_p[0]
-    artist_match = re.match(CLUBTIX_REGEX, artists_p.text)
-    if artist_match:
-      artist = artist_match.group(1).strip().lower()
-      print artist
-      #curArtist = Artist(artist)
-      #artists.append(curArtist)
-
-
-def parse_pb_artists(soup, artists):
+def parse_artist_text_matches(soup, artists):
   artists_p = [p for p in soup.find_all("p") if re.match(CLUBTIX_REGEX, p.text) is not None]
   if len(artists_p) > 0:
     artists_p = artists_p[0]
@@ -116,9 +103,8 @@ def process_event(event_date, url):
 
   artists = []
 
-  parse_b_artists(soup, artists)
-  #parse_p_artists(soup, artists)
-  parse_pb_artists(soup, artists)
+  parse_artist_tag_matches(soup, artists)
+  parse_artist_text_matches(soup, artists)
 
   for artist in artists:
     fb_user = artist.fb_user()

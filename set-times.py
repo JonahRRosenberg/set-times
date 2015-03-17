@@ -136,14 +136,14 @@ def process_event(event_date, url):
 if __name__ == '__main__':
   #TODO: Timeout testing
   # Assign QuotaGuard to your environment's http_proxy variable
-  import os
-  print "url:", os.environ['QUOTAGUARDSTATIC_URL']
-  os.environ['http_proxy'] = os.environ['QUOTAGUARDSTATIC_URL']
+  #import os
+  #print "url:", os.environ['QUOTAGUARDSTATIC_URL']
+  #os.environ['http_proxy'] = os.environ['QUOTAGUARDSTATIC_URL']
 
-  events_soup = html_request(EVENTS_URL)
-  print events_soup
+  #events_soup = html_request(EVENTS_URL)
+  #print events_soup
 
-  exit()
+  #exit()
 
 
   try:

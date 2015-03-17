@@ -134,6 +134,17 @@ def process_event(event_date, url):
       print "Unable to find twitter_user. artist:", artist.name
 
 if __name__ == '__main__':
+  #TODO: Timeout testing
+
+  soup = html_request("http://google.com")
+  print soup
+
+  soup = html_request(EVENTS_URL)
+  print "events size:", len(soup)
+
+  exit()
+
+
   try:
     events_by_date = defaultdict(set)
 

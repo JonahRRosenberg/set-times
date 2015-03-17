@@ -135,12 +135,14 @@ def process_event(event_date, url):
 
 if __name__ == '__main__':
   #TODO: Timeout testing
+  import socket
+  print socket.gethostbyname(socket.gethostname())
+  print socket.gethostbyname(socket.getfqdn())
 
-  soup = html_request("http://google.com")
-  print soup
-
-  soup = html_request(EVENTS_URL)
-  print "events size:", len(soup)
+  s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+  s.connect(("gmail.com",80))
+  print(s.getsockname()[0])
+  s.close()
 
   exit()
 

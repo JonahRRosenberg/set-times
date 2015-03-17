@@ -1,3 +1,2 @@
-#worker: python set-times.py
-worker: traceroute clubtix.com
+worker: python set-times.py
 

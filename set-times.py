@@ -135,14 +135,12 @@ def process_event(event_date, url):
 
 if __name__ == '__main__':
   #TODO: Timeout testing
-  import socket
-  print socket.gethostbyname(socket.gethostname())
-  print socket.gethostbyname(socket.getfqdn())
+  # Assign QuotaGuard to your environment's http_proxy variable
+  print "url:", os.environ['QUOTAGUARDSTATIC_URL']
+  os.environ['http_proxy'] = os.environ['QUOTAGUARDSTATIC_URL']
 
-  s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-  s.connect(("gmail.com",80))
-  print(s.getsockname()[0])
-  s.close()
+  events_soup = html_request(EVENTS_URL)
+  print events_soup
 
   exit()
 

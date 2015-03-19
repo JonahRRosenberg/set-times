@@ -136,6 +136,11 @@ def process_event(event_date, url):
 if __name__ == '__main__':
   #TODO: Timeout testing
 
+  import socket
+  print socket.gethostbyname(socket.gethostname())
+
+  exit()
+
   #import urllib2, os
   #os.environ['http_proxy'] = os.environ['QUOTAGUARDSTATIC_URL']
   ##url = 'http://checkip.dyndns.org'

@@ -136,15 +136,16 @@ def process_event(event_date, url):
 if __name__ == '__main__':
   #TODO: Timeout testing
 
-  import socket
-  dest_addr = socket.gethostbyname('google.com')
-  print "google:", dest_addr
-
-  dest_addr = socket.gethostbyname('clubtix.com')
-  print "clubtix:", dest_addr
-
-  html = urllib2.urlopen('http://' + str(dest_addr)).read()
-  print "ip html:", len(html)
+  import urllib2, os
+  os.environ['http_proxy'] = os.environ['QUOTAGUARDSTATIC_URL']
+  #url = 'http://checkip.dyndns.org'
+  url = 'http://clubtix.com'
+  proxy = urllib2.ProxyHandler()
+  opener = urllib2.build_opener(proxy)
+  in_ = opener.open(url)
+  html = in_.read()
+  print len(html)
+  exit()
 
   html = urllib2.urlopen('http://clubtix.com').read()
   print "clubtix html:", len(html)

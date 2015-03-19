@@ -135,6 +135,16 @@ def process_event(event_date, url):
 
 if __name__ == '__main__':
   #TODO: Timeout testing
+
+  import socket
+  dest_addr = socket.gethostbyname('google.com')
+  print "google:", dest_addr
+
+  dest_addr = socket.gethostbyname('clubtix.com')
+  print "clubtix:", dest_addr
+
+  exit()
+
   # Assign QuotaGuard to your environment's http_proxy variable
   #import os
   #print "url:", os.environ['QUOTAGUARDSTATIC_URL']

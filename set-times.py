@@ -136,32 +136,21 @@ def process_event(event_date, url):
 if __name__ == '__main__':
   #TODO: Timeout testing
 
-  import urllib2, os
-  os.environ['http_proxy'] = os.environ['QUOTAGUARDSTATIC_URL']
-  #url = 'http://checkip.dyndns.org'
-  url = 'http://clubtix.com'
-  proxy = urllib2.ProxyHandler()
-  opener = urllib2.build_opener(proxy)
-  in_ = opener.open(url)
-  html = in_.read()
-  print len(html)
-  exit()
-
-  html = urllib2.urlopen('http://clubtix.com').read()
-  print "clubtix html:", len(html)
-
-  exit()
-
-  # Assign QuotaGuard to your environment's http_proxy variable
-  #import os
-  #print "url:", os.environ['QUOTAGUARDSTATIC_URL']
+  #import urllib2, os
   #os.environ['http_proxy'] = os.environ['QUOTAGUARDSTATIC_URL']
-
-  #events_soup = html_request(EVENTS_URL)
-  #print events_soup
-
+  ##url = 'http://checkip.dyndns.org'
+  #url = 'http://clubtix.com'
+  #proxy = urllib2.ProxyHandler()
+  #opener = urllib2.build_opener(proxy)
+  #in_ = opener.open(url)
+  #html = in_.read()
+  #print len(html)
   #exit()
 
+  #html = urllib2.urlopen('http://clubtix.com').read()
+  #print "clubtix html:", len(html)
+
+  #exit()
 
   try:
     events_by_date = defaultdict(set)

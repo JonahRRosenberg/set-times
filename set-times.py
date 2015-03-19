@@ -134,29 +134,6 @@ def process_event(event_date, url):
       print "Unable to find twitter_user. artist:", artist.name
 
 if __name__ == '__main__':
-  #TODO: Timeout testing
-
-  import socket
-  print socket.gethostbyname(socket.gethostname())
-
-  exit()
-
-  #import urllib2, os
-  #os.environ['http_proxy'] = os.environ['QUOTAGUARDSTATIC_URL']
-  ##url = 'http://checkip.dyndns.org'
-  #url = 'http://clubtix.com'
-  #proxy = urllib2.ProxyHandler()
-  #opener = urllib2.build_opener(proxy)
-  #in_ = opener.open(url)
-  #html = in_.read()
-  #print len(html)
-  #exit()
-
-  #html = urllib2.urlopen('http://clubtix.com').read()
-  #print "clubtix html:", len(html)
-
-  #exit()
-
   try:
     events_by_date = defaultdict(set)
 

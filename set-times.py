@@ -143,6 +143,12 @@ if __name__ == '__main__':
   dest_addr = socket.gethostbyname('clubtix.com')
   print "clubtix:", dest_addr
 
+  html = urllib2.urlopen('http://' + str(dest_addr)).read()
+  print "ip html:", len(html)
+
+  html = urllib2.urlopen('http://clubtix.com').read()
+  print "clubtix html:", len(html)
+
   exit()
 
   # Assign QuotaGuard to your environment's http_proxy variable

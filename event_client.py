@@ -27,9 +27,11 @@ class EventClient(object):
     e = Event(event)
     if e.artists():
       events.append(e)
+    else:
+      print "no artists for for event:", e.name(), "url:", e.url()
 
 if __name__ == '__main__':
-  events =EventClient().get_events()
+  events = EventClient().get_events()
   for event in events:
     print "event:", event.name(), "artists:", [a.name for a in event.artists()], "start_time:", event.start_time()
 

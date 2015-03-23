@@ -5,8 +5,11 @@ class Event(object):
     self.__event = event
 
   def name(self):
-    return self.__event['title']
+    return self.__event['title'].encode('utf-8').strip()
 
   def artists(self):
     return [Artist(x['name']) for x in self.__event['performers']['performer']]
+
+  def start_time(self):
+    return self.__event['start_time']
 

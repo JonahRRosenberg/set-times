@@ -31,6 +31,5 @@ class EventClient(object):
 if __name__ == '__main__':
   events =EventClient().get_events()
   for event in events:
-    print "event:", event.name(), "artists:", [a.name for a in event.artists()]
-
+    print "event:", event.name(), "artists:", [a.name for a in event.artists()], "start_time:", event.start_time()
 

@@ -1,3 +1,5 @@
+from datetime import datetime
+
 from artist import Artist
 
 class Event(object):
@@ -18,7 +20,7 @@ class Event(object):
     return artists
 
   def start_time(self):
-    return self.event['start_time']
+    return datetime.strptime(self.event['start_time'], "%Y-%m-%d %H:%M:%S")
 
   def url(self):
     return self.event['url']

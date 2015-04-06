@@ -1,3 +1,5 @@
+from datetime import date
+
 import eventful
 
 from event import Event
@@ -25,10 +27,11 @@ class EventClient(object):
 
   def _add_event(self, event, events):
     e = Event(event)
-    if e.artists():
-      events.append(e)
-    else:
-      print "no artists for for event:", e.name(), "url:", e.url()
+    if e.start_time().date() == date.today():
+      if e.artists():
+        events.append(e)
+      else:
+        print "no artists for for event:", e.name(), "url:", e.url()
 
 if __name__ == '__main__':
   events = EventClient().get_events()

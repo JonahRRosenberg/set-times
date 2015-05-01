@@ -23,7 +23,7 @@ MESSAGE_POST = """
     """
 MAX_ARTIST_LEN = 45
 
-TIMEOUT_IN_SECONDS = 15
+TIMEOUT_IN_SECONDS = 30
 
 MY_EMAIL = "JonahRRosenberg@gmail.com"
 
